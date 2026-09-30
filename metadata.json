@@ -1,0 +1,6 @@
+{
+  "name": "QueueFlow Real-Time Queue Management",
+  "description": "Modern real-time queue management web app with GPS restaurant discovery, live customer token tracking, and high-contrast staff dispatch dashboard.",
+  "requestFramePermissions": ["geolocation"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
