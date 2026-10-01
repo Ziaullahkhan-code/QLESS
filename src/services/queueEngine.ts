@@ -1,4 +1,4 @@
-import { QueueToken, Restaurant, TokenStatus, QueueMetrics, ExpiredNotification } from '../types';
+import { QueueToken, Restaurant, QueueMetrics, ExpiredNotification } from '../types';
 import { INITIAL_RESTAURANTS } from '../data/restaurants';
 import { 
   playServeNextChime, 
@@ -95,6 +95,17 @@ class QueueEngine {
 
   public getCounterTimeoutSeconds(): number {
     return this.counterTimeoutSeconds;
+  }
+
+  public destroy() {
+    if (this.timerInterval) {
+      clearInterval(this.timerInterval);
+      this.timerInterval = null;
+    }
+    if (this.broadcastChannel) {
+      this.broadcastChannel.close();
+      this.broadcastChannel = null;
+    }
   }
 
   public setCounterTimeoutSeconds(seconds: number) {

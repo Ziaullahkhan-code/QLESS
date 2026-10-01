@@ -130,6 +130,8 @@ export const Header: React.FC<HeaderProps> = ({
           >
             <MapPin className="w-3.5 h-3.5 text-blue-600" />
             <span className="hidden lg:inline">SMCHS Anchor</span>
+            {gpsStatus === 'granted' && <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" title="GPS active" />}
+            {gpsStatus === 'preset' && <span className="w-1.5 h-1.5 rounded-full bg-blue-500" title="Preset location" />}
           </button>
 
           <button

@@ -7,10 +7,8 @@ import {
   Maximize2, 
   Minimize2, 
   Users, 
-  Sparkles, 
   Bell, 
   Clock, 
-  Store,
   ChevronDown
 } from 'lucide-react';
 import { isSoundEnabled, setSoundEnabled, playCustomerTurnAlert, playClickSound } from '../services/sound';
@@ -45,12 +43,14 @@ export const TVDisplayView: React.FC<TVDisplayViewProps> = ({
 
   const toggleFullscreen = () => {
     playClickSound();
-    if (!document.fullscreenElement) {
-      document.documentElement.requestFullscreen().catch(() => {});
-      setIsFullscreen(true);
-    } else {
-      document.exitFullscreen().catch(() => {});
-      setIsFullscreen(false);
+    try {
+      if (!document.fullscreenElement && document.documentElement.requestFullscreen) {
+        document.documentElement.requestFullscreen().then(() => setIsFullscreen(true)).catch(() => {});
+      } else if (document.exitFullscreen) {
+        document.exitFullscreen().then(() => setIsFullscreen(false)).catch(() => {});
+      }
+    } catch {
+      // Fullscreen not permitted in iframe
     }
   };
 

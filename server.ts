@@ -3,8 +3,8 @@ import { createServer as createViteServer } from 'vite';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { INITIAL_RESTAURANTS } from './src/data/restaurants';
-import { QueueToken, Restaurant, QueueMetrics } from './src/types';
-import { formatPakistanPhone, validatePakistanPhone, getPakistanOperator } from './src/utils/pakistanPhone';
+import { QueueToken, Restaurant } from './src/types';
+import { validatePakistanPhone } from './src/utils/pakistanPhone';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -318,7 +318,7 @@ async function startServer() {
   });
 
   // 11. Reset / Seed Queue
-  app.post('/api/tokens/reset', (req: Request, res: Response) => {
+  app.post('/api/tokens/reset', (_req: Request, res: Response) => {
     seedInitialData();
     broadcast('queue_reset', { timestamp: Date.now() });
     res.json({ success: true, message: 'Sample queue reset with Karachi diners' });

@@ -59,6 +59,20 @@ export async function sendPakistanSmsNotification(
 /**
  * Download daily queue analytics CSV from the Express backend
  */
-export function downloadAnalyticsCsv() {
-  window.location.href = '/api/analytics/export';
+export async function downloadAnalyticsCsv() {
+  try {
+    const res = await fetch('/api/analytics/export');
+    if (!res.ok) throw new Error('Export error');
+    const blob = await res.blob();
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', 'qless-karachi-queue-report.csv');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
+  } catch (err) {
+    console.warn('CSV export fallback:', err);
+  }
 }

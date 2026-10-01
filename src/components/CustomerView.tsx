@@ -16,7 +16,6 @@ import {
   Filter,
   ArrowUpDown,
   Coins,
-  Star,
   Flame,
   Sparkles
 } from 'lucide-react';

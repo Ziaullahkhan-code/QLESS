@@ -1,6 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
 import { queueEngine } from '../services/queueEngine';
-import { QueueToken, Restaurant, QueueMetrics } from '../types';
 
 export function useQueueState(selectedRestaurantId?: string) {
   const [, setRevision] = useState(0);

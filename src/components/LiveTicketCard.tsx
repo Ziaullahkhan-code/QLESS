@@ -39,17 +39,13 @@ export const LiveTicketCard: React.FC<LiveTicketCardProps> = ({
   const [secondsLeftToArrive, setSecondsLeftToArrive] = useState<number | null>(null);
   const [smsStatus, setSmsStatus] = useState<string | null>(null);
   const [isSendingSms, setIsSendingSms] = useState(false);
+  const [showCancelConfirm, setShowCancelConfirm] = useState(false);
 
   const counterTarget = token.calledToCounter || restaurant?.defaultCounter || 'Counter 3';
-
-  const handleShareWhatsApp = () => {
-    playClickSound();
-    const restName = restaurant?.name || 'Restaurant';
-    const text = encodeURIComponent(
-      `Assalam-o-Alaikum! My queue pass for ${restName} is #${token.tokenNumber} (Party of ${token.partySize}). Target: ${counterTarget}. Track live: https://qless.pk/t/${token.tokenNumber}`
-    );
-    window.open(`https://api.whatsapp.com/send?text=${text}`, '_blank');
-  };
+  const restName = restaurant?.name || 'Restaurant';
+  const whatsAppShareUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(
+    `Assalam-o-Alaikum! My queue pass for ${restName} is #${token.tokenNumber} (Party of ${token.partySize}). Target: ${counterTarget}. Track live: https://qless.pk/t/${token.tokenNumber}`
+  )}`;
 
   const handleSendSms = async () => {
     if (!token.phone) return;
@@ -412,15 +408,17 @@ export const LiveTicketCard: React.FC<LiveTicketCardProps> = ({
 
             {/* Quick Share & SMS Dispatch Actions */}
             <div className="pt-3 flex flex-wrap items-center gap-2.5">
-              <button
-                type="button"
-                onClick={handleShareWhatsApp}
+              <a
+                href={whatsAppShareUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => playClickSound()}
                 title="Send token pass to WhatsApp"
-                className="flex-1 py-2.5 px-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center justify-center gap-2 transition-all shadow-md shadow-emerald-600/20 cursor-pointer"
+                className="flex-1 py-2.5 px-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center justify-center gap-2 transition-all shadow-md shadow-emerald-600/20 cursor-pointer no-underline"
               >
                 <Share2 className="w-3.5 h-3.5" />
                 <span>Share via WhatsApp</span>
-              </button>
+              </a>
 
               {token.phone && (
                 <button
@@ -454,20 +452,46 @@ export const LiveTicketCard: React.FC<LiveTicketCardProps> = ({
           </div>
 
           <div>
-            {!isCompleted && !isSkipped && (
+            {!isCompleted && !isSkipped && !showCancelConfirm && (
               <button
                 type="button"
                 onClick={() => {
                   playClickSound();
-                  if (confirm('Cancel and leave this queue line?')) {
-                    onCancel(token.id);
-                  }
+                  setShowCancelConfirm(true);
                 }}
                 className="text-slate-500 hover:text-rose-600 font-semibold transition-colors cursor-pointer"
               >
                 Cancel Token
               </button>
             )}
+
+            {!isCompleted && !isSkipped && showCancelConfirm && (
+              <div className="flex items-center gap-2">
+                <span className="text-[11px] text-rose-600 font-bold">Leave line?</span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    playClickSound();
+                    setShowCancelConfirm(false);
+                    onCancel(token.id);
+                  }}
+                  className="px-2 py-1 rounded-md bg-rose-600 hover:bg-rose-700 text-white font-bold text-[10px] cursor-pointer"
+                >
+                  Yes, Leave
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    playClickSound();
+                    setShowCancelConfirm(false);
+                  }}
+                  className="px-2 py-1 rounded-md bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold text-[10px] cursor-pointer"
+                >
+                  Keep Place
+                </button>
+              </div>
+            )}
+
             {isCompleted && (
               <span className="text-emerald-600 font-bold flex items-center gap-1">
                 <CheckCircle2 className="w-4 h-4" />

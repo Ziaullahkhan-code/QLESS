@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { ActiveView, QueueToken } from './types';
 import { useGeolocation } from './hooks/useGeolocation';
 import { useQueueState } from './hooks/useQueueState';
