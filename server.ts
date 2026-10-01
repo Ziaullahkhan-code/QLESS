@@ -96,16 +96,15 @@ setInterval(() => {
   }
 }, 1000);
 
-async function startServer() {
-  const app = express();
+export const app = express();
 
-  app.use(express.json());
-  app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-  // --- REST API ROUTES ---
+// --- REST API ROUTES ---
 
-  // 1. Health check
-  app.get('/api/health', (_req: Request, res: Response) => {
+// 1. Health check
+app.get('/api/health', (_req: Request, res: Response) => {
     res.json({
       status: 'ok',
       service: 'QLESS Real-Time Queue & Priority Dispatch Backend',
@@ -410,26 +409,32 @@ async function startServer() {
   });
 
   // --- VITE MIDDLEWARE OR STATIC SERVING ---
-  if (!isProd) {
-    const vite = await createViteServer({
-      server: {
-        middlewareMode: true,
-        hmr: process.env.DISABLE_HMR !== 'true',
-      },
-      appType: 'spa',
-    });
-    app.use(vite.middlewares);
-  } else {
-    const distPath = path.resolve(__dirname, 'dist');
-    app.use(express.static(distPath));
-    app.get('*', (_req: Request, res: Response) => {
-      res.sendFile(path.resolve(distPath, 'index.html'));
+  export async function startServer() {
+    if (!isProd) {
+      const vite = await createViteServer({
+        server: {
+          middlewareMode: true,
+          hmr: process.env.DISABLE_HMR !== 'true',
+        },
+        appType: 'spa',
+      });
+      app.use(vite.middlewares);
+    } else {
+      const distPath = path.resolve(__dirname, 'dist');
+      app.use(express.static(distPath));
+      app.get('*', (_req: Request, res: Response) => {
+        res.sendFile(path.resolve(distPath, 'index.html'));
+      });
+    }
+
+    app.listen(PORT, '0.0.0.0', () => {
+      console.log(`[QLESS Server] Full-Stack Running at http://0.0.0.0:${PORT} (mode: ${isProd ? 'production' : 'development'})`);
     });
   }
 
-  app.listen(PORT, '0.0.0.0', () => {
-    console.log(`[QLESS Server] Full-Stack Running at http://0.0.0.0:${PORT} (mode: ${isProd ? 'production' : 'development'})`);
-  });
-}
+  // Only start local standalone listener when not in Vercel Serverless environment
+  if (!process.env.VERCEL && !process.env.VERCEL_ENV) {
+    startServer();
+  }
 
-startServer();
+  export default app;
